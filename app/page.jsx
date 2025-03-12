@@ -8,17 +8,23 @@ export default function Home() {
   const [link, setLink] = useState("");
 
   const generateQR = async () => {
-    const timestamp = Math.floor(Date.now() / 60000);
-    const dynamicURL = `/dynamic/${timestamp}`;
-    setLink(dynamicURL);
+    if (typeof window !== "undefined") {
+      const timestamp = Math.floor(Date.now() / 300000);
+      const dynamicURL = `/dynamic/${timestamp}`;
+      setLink(dynamicURL);
 
-    const qrData = await QRCode.toDataURL(window.location.origin + dynamicURL);
-    setQr(qrData);
+      try {
+        const qrData = await QRCode.toDataURL(window.location.origin + dynamicURL);
+        setQr(qrData);
+      } catch (error) {
+        console.error("QR Code generation failed:", error);
+      }
+    }
   };
 
   useEffect(() => {
     generateQR();
-    const interval = setInterval(generateQR, 60000);
+    const interval = setInterval(generateQR, 300000);
     return () => clearInterval(interval);
   }, []);
 
